@@ -1,0 +1,99 @@
+{
+  "id": null,
+  "uid": "infra-monitor-001",
+  "title": "Infrastructure Monitoring",
+  "description": "CPU, RAM, disk, network, and service-status metrics for servers, VMs, and applications monitored via Zabbix Agent 2.",
+  "tags": ["open-monitoring-stack", "infrastructure", "servers"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU Utilization (%)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/CPU utilization/" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "max": 100, "min": 0 } }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Memory Utilization (%)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/Memory utilization/" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "max": 100, "min": 0 } }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Disk Space Usage (%)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/space.*pfree|Disk .*used/" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "max": 100, "min": 0 } }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Network Traffic (Servers)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/Interface .*: Bits (received|sent)/" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bps" } }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Service Status (Agent-Monitored Processes/Ports)",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 16 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/service.*status|proc.num/" } }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "System Uptime",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 16 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/System uptime/" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "dtdurations" } }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "group",
+        "type": "query",
+        "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+        "query": "*",
+        "refresh": 2,
+        "label": "Host Group"
+      },
+      {
+        "name": "host",
+        "type": "query",
+        "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+        "query": "$group.*",
+        "refresh": 2,
+        "label": "Host"
+      }
+    ]
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "id": null,
+  "uid": "alert-dashboard-001",
+  "title": "Alert Dashboard",
+  "description": "Consolidated view of active and recent Zabbix problems/triggers across all monitored devices and infrastructure.",
+  "tags": ["open-monitoring-stack", "alerts", "problems"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-24h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Active Problems - Disaster",
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "dark-red" } } },
+      "targets": [{ "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "options": { "minSeverity": 5 } }]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Active Problems - High",
+      "gridPos": { "h": 5, "w": 4, "x": 4, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "red" } } },
+      "targets": [{ "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "options": { "minSeverity": 4 } }]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Active Problems - Average",
+      "gridPos": { "h": 5, "w": 4, "x": 8, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "orange" } } },
+      "targets": [{ "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "options": { "minSeverity": 3 } }]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Active Problems - Warning",
+      "gridPos": { "h": 5, "w": 4, "x": 12, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "yellow" } } },
+      "targets": [{ "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "options": { "minSeverity": 2 } }]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Total Active Problems",
+      "gridPos": { "h": 5, "w": 8, "x": 16, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [{ "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "options": { "minSeverity": 0 } }]
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "Current Problems",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 5 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        {
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "/.*/" },
+          "application": { "filter": "" },
+          "options": { "showDisabledItems": false, "minSeverity": 0, "sortProblems": "priority" }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Problem Count Over Time",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 17 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "options": { "minSeverity": 0 } }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "group",
+        "type": "query",
+        "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+        "query": "*",
+        "refresh": 2,
+        "label": "Host Group"
+      }
+    ]
+  }
+}

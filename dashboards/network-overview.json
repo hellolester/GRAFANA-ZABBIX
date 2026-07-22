@@ -1,0 +1,123 @@
+{
+  "id": null,
+  "uid": "net-overview-001",
+  "title": "Network Overview",
+  "description": "Vendor-neutral overview of all SNMP/ICMP-monitored network devices: availability, interface status, bandwidth, and errors.",
+  "tags": ["open-monitoring-stack", "network", "snmp"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Total Monitored Devices",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        {
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "/.*/" },
+          "application": { "filter": "" },
+          "item": { "filter": "/.*/" },
+          "options": { "count": true }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Devices Online",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" } } },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/ICMP ping/" } }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Devices Offline",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "red" } } },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/ICMP ping/" } }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Active Alerts",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "orange" } } },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "trigger": { "filter": "/.*/" } }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Interface Bandwidth (In/Out) - All Devices",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 5 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        {
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "/.*/" },
+          "item": { "filter": "/Interface .*: Bits (received|sent)/" }
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bps" } }
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "Interface Errors and Discards",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        {
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "/.*/" },
+          "item": { "filter": "/Interface .*: (Errors|Discards)/" }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Network Latency (ICMP RTT)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/ICMP ping.*time/" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "group",
+        "type": "query",
+        "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+        "query": "*",
+        "refresh": 2,
+        "label": "Host Group"
+      },
+      {
+        "name": "host",
+        "type": "query",
+        "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+        "query": "$group.*",
+        "refresh": 2,
+        "label": "Host"
+      }
+    ]
+  }
+}

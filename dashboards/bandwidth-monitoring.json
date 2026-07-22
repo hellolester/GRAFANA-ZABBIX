@@ -1,0 +1,84 @@
+{
+  "id": null,
+  "uid": "bandwidth-monitor-001",
+  "title": "Bandwidth Monitoring",
+  "description": "Per-interface bandwidth utilization, packet errors, and drops across all SNMP-monitored network devices.",
+  "tags": ["open-monitoring-stack", "network", "bandwidth", "snmp"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-24h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Inbound Bandwidth by Interface",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/Interface .*: Bits received/" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bps" } }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Outbound Bandwidth by Interface",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 9 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/Interface .*: Bits sent/" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bps" } }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Packet Errors (In/Out)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/Interface .*: (Inbound|Outbound) errors/" } }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Packet Drops / Discards",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
+      "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+      "targets": [
+        { "group": { "filter": "/.*/" }, "host": { "filter": "/.*/" }, "item": { "filter": "/Interface .*: (Inbound|Outbound) discards/" } }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "group",
+        "type": "query",
+        "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+        "query": "*",
+        "refresh": 2,
+        "label": "Host Group"
+      },
+      {
+        "name": "host",
+        "type": "query",
+        "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+        "query": "$group.*",
+        "refresh": 2,
+        "label": "Host"
+      },
+      {
+        "name": "interface",
+        "type": "query",
+        "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
+        "query": "$group.$host.*",
+        "refresh": 2,
+        "label": "Interface"
+      }
+    ]
+  }
+}

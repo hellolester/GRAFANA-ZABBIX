@@ -1,0 +1,31 @@
+###############################################################################
+# database.cnf
+# MariaDB tuning overrides for a monitoring workload (moderate write volume
+# from Zabbix history/trends). Copy into /etc/mysql/mariadb.conf.d/ if you
+# want to apply these tunings; not applied automatically by install.sh to
+# avoid overriding distro defaults on resource-constrained hosts.
+###############################################################################
+
+[mysqld]
+# Character set required by Zabbix
+character-set-server = utf8mb4
+collation-server = utf8mb4_bin
+
+# InnoDB tuning - adjust buffer pool size based on available RAM
+# (rule of thumb: ~50-70% of RAM on a dedicated monitoring host)
+innodb_buffer_pool_size = 512M
+innodb_log_file_size = 128M
+innodb_flush_log_at_trx_commit = 2
+innodb_flush_method = O_DIRECT
+
+# Required by Zabbix schema (triggers/functions use binary logging)
+log_bin_trust_function_creators = 1
+
+max_connections = 200
+wait_timeout = 600
+interactive_timeout = 600
+
+# Slow query logging for troubleshooting
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/mariadb-slow.log
+long_query_time = 2

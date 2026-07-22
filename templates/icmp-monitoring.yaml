@@ -1,0 +1,62 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2e3fa8f6a3
+      name: 'Templates/Network devices'
+  templates:
+    - uuid: 1a2b3c4d5e6f70819293a4b5c6d7e8f2
+      template: 'ICMP Ping Monitoring'
+      name: 'ICMP Ping Monitoring'
+      description: |
+        Simple availability and latency monitoring using ICMP echo (ping),
+        implemented via the Zabbix Server's built-in ICMP pinger process.
+        Requires no agent and works with any IP-reachable device -
+        ideal for devices that do not support SNMP or an agent
+        (e.g. some IoT devices, appliances, or third-party black boxes).
+      groups:
+        - name: 'Templates/Network devices'
+      items:
+        - uuid: 00000000000000000000000000000201
+          name: 'ICMP ping'
+          type: SIMPLE
+          key: 'icmpping'
+          delay: 1m
+          value_type: UNSIGNED
+          description: 'Returns 1 if the host responds to ICMP echo requests, 0 otherwise.'
+
+        - uuid: 00000000000000000000000000000202
+          name: 'ICMP ping response time'
+          type: SIMPLE
+          key: 'icmppingsec'
+          delay: 1m
+          value_type: FLOAT
+          units: s
+          description: 'Round-trip time (RTT) for the ICMP echo request.'
+
+        - uuid: 00000000000000000000000000000203
+          name: 'ICMP ping loss (%)'
+          type: SIMPLE
+          key: 'icmppingloss'
+          delay: 1m
+          value_type: FLOAT
+          units: '%'
+          description: 'Percentage of ICMP packets lost out of the configured probe count.'
+
+      triggers:
+        - uuid: 00000000000000000000000000000210
+          name: '{HOST.NAME} is unreachable via ICMP ping'
+          expression: 'max(/ICMP Ping Monitoring/icmpping,3m)=0'
+          priority: DISASTER
+          description: 'The device has not responded to ICMP ping for 3 minutes.'
+
+        - uuid: 00000000000000000000000000000211
+          name: '{HOST.NAME}: High ICMP packet loss'
+          expression: 'min(/ICMP Ping Monitoring/icmppingloss,5m)>20'
+          priority: AVERAGE
+          description: 'More than 20% packet loss detected over the last 5 minutes - possible network congestion or instability.'
+
+        - uuid: 00000000000000000000000000000212
+          name: '{HOST.NAME}: High ICMP latency'
+          expression: 'min(/ICMP Ping Monitoring/icmppingsec,5m)>0.2'
+          priority: WARNING
+          description: 'Average round-trip time exceeds 200ms over the last 5 minutes.'

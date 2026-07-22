@@ -1,0 +1,217 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2e3fa8f6a1
+      name: 'Templates/Network devices'
+  templates:
+    - uuid: 1a2b3c4d5e6f70819293a4b5c6d7e8f9
+      template: 'Generic SNMP Device'
+      name: 'Generic SNMP Device'
+      description: |
+        Vendor-neutral SNMP monitoring template. Works with any SNMP v2c/v3
+        compliant device (routers, switches, firewalls, wireless controllers,
+        storage systems, IoT devices, servers) that exposes standard MIB-II
+        and Host Resources MIB OIDs. No vendor-specific OIDs are used.
+      groups:
+        - name: 'Templates/Network devices'
+      items:
+        - uuid: 00000000000000000000000000000001
+          name: 'System uptime'
+          type: SNMP_AGENT
+          key: 'system.uptime'
+          snmp_oid: '1.3.6.1.2.1.1.3.0'
+          delay: 3m
+          value_type: UNSIGNED
+          units: uptime
+          description: 'Standard sysUpTime (MIB-II) - vendor neutral.'
+
+        - uuid: 00000000000000000000000000000002
+          name: 'System description'
+          type: SNMP_AGENT
+          key: 'system.descr'
+          snmp_oid: '1.3.6.1.2.1.1.1.0'
+          delay: 1h
+          value_type: CHAR
+          description: 'sysDescr - hardware/software identification string.'
+
+        - uuid: 00000000000000000000000000000003
+          name: 'System contact'
+          type: SNMP_AGENT
+          key: 'system.contact'
+          snmp_oid: '1.3.6.1.2.1.1.4.0'
+          delay: 1h
+          value_type: CHAR
+
+        - uuid: 00000000000000000000000000000004
+          name: 'System location'
+          type: SNMP_AGENT
+          key: 'system.location'
+          snmp_oid: '1.3.6.1.2.1.1.6.0'
+          delay: 1h
+          value_type: CHAR
+
+        - uuid: 00000000000000000000000000000005
+          name: 'CPU utilization'
+          type: SNMP_AGENT
+          key: 'system.cpu.util'
+          snmp_oid: '1.3.6.1.4.1.2021.11.9.0'
+          delay: 1m
+          value_type: UNSIGNED
+          units: '%'
+          description: 'UCD-SNMP-MIB ssCpuUser (widely implemented on Linux-based network OS). Devices lacking this OID will show no data; use vendor-agnostic Host Resources MIB (hrProcessorLoad) as an alternative if needed.'
+
+        - uuid: 00000000000000000000000000000006
+          name: 'Memory total'
+          type: SNMP_AGENT
+          key: 'vm.memory.total'
+          snmp_oid: '1.3.6.1.4.1.2021.4.5.0'
+          delay: 5m
+          value_type: UNSIGNED
+          units: B
+
+        - uuid: 00000000000000000000000000000007
+          name: 'Memory available'
+          type: SNMP_AGENT
+          key: 'vm.memory.available'
+          snmp_oid: '1.3.6.1.4.1.2021.4.6.0'
+          delay: 5m
+          value_type: UNSIGNED
+          units: B
+
+      discovery_rules:
+        - uuid: 00000000000000000000000000000010
+          name: 'Network interface discovery'
+          type: SNMP_AGENT
+          key: 'net.if.discovery'
+          snmp_oid: 'discovery[{#IFDESCR},1.3.6.1.2.1.2.2.1.2,{#IFINDEX},1.3.6.1.2.1.2.2.1.1]'
+          delay: 1h
+          description: 'Discovers all interfaces via standard IF-MIB (ifTable). Vendor neutral.'
+          item_prototypes:
+            - uuid: 00000000000000000000000000000020
+              name: 'Interface {#IFDESCR}: Operational status'
+              type: SNMP_AGENT
+              key: 'net.if.status[{#IFINDEX}]'
+              snmp_oid: '1.3.6.1.2.1.2.2.1.8.{#IFINDEX}'
+              delay: 1m
+              value_type: UNSIGNED
+              valuemap:
+                name: 'Interface status'
+
+            - uuid: 00000000000000000000000000000021
+              name: 'Interface {#IFDESCR}: Bits received'
+              type: SNMP_AGENT
+              key: 'net.if.in[{#IFINDEX}]'
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.6.{#IFINDEX}'
+              delay: 1m
+              value_type: UNSIGNED
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters: []
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+
+            - uuid: 00000000000000000000000000000022
+              name: 'Interface {#IFDESCR}: Bits sent'
+              type: SNMP_AGENT
+              key: 'net.if.out[{#IFINDEX}]'
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.10.{#IFINDEX}'
+              delay: 1m
+              value_type: UNSIGNED
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters: []
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+
+            - uuid: 00000000000000000000000000000023
+              name: 'Interface {#IFDESCR}: Inbound errors'
+              type: SNMP_AGENT
+              key: 'net.if.in.errors[{#IFINDEX}]'
+              snmp_oid: '1.3.6.1.2.1.2.2.1.14.{#IFINDEX}'
+              delay: 1m
+              value_type: UNSIGNED
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters: []
+
+            - uuid: 00000000000000000000000000000024
+              name: 'Interface {#IFDESCR}: Outbound errors'
+              type: SNMP_AGENT
+              key: 'net.if.out.errors[{#IFINDEX}]'
+              snmp_oid: '1.3.6.1.2.1.2.2.1.20.{#IFINDEX}'
+              delay: 1m
+              value_type: UNSIGNED
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters: []
+
+            - uuid: 00000000000000000000000000000025
+              name: 'Interface {#IFDESCR}: Inbound discards'
+              type: SNMP_AGENT
+              key: 'net.if.in.discards[{#IFINDEX}]'
+              snmp_oid: '1.3.6.1.2.1.2.2.1.13.{#IFINDEX}'
+              delay: 1m
+              value_type: UNSIGNED
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters: []
+
+            - uuid: 00000000000000000000000000000026
+              name: 'Interface {#IFDESCR}: Outbound discards'
+              type: SNMP_AGENT
+              key: 'net.if.out.discards[{#IFINDEX}]'
+              snmp_oid: '1.3.6.1.2.1.2.2.1.19.{#IFINDEX}'
+              delay: 1m
+              value_type: UNSIGNED
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters: []
+
+          trigger_prototypes:
+            - uuid: 00000000000000000000000000000030
+              name: 'Interface {#IFDESCR} is down on {HOST.NAME}'
+              expression: 'last(/Generic SNMP Device/net.if.status[{#IFINDEX}])=2'
+              priority: AVERAGE
+              description: 'Interface operational status is down (ifOperStatus=2).'
+
+      triggers:
+        - uuid: 00000000000000000000000000000040
+          name: '{HOST.NAME} is unreachable via SNMP'
+          expression: 'nodata(/Generic SNMP Device/system.uptime,10m)=1'
+          priority: HIGH
+          description: 'No SNMP data received for 10 minutes. Device may be down, unreachable, or SNMP misconfigured.'
+
+        - uuid: 00000000000000000000000000000041
+          name: '{HOST.NAME} has high CPU utilization'
+          expression: 'min(/Generic SNMP Device/system.cpu.util,5m)>85'
+          priority: WARNING
+          description: 'CPU utilization has been above 85% for the last 5 minutes.'
+
+        - uuid: 00000000000000000000000000000042
+          name: '{HOST.NAME} device was restarted'
+          expression: 'last(/Generic SNMP Device/system.uptime)<10m'
+          priority: INFO
+          description: 'sysUpTime reset detected - device rebooted or SNMP process restarted.'
+
+  value_maps:
+    - uuid: 00000000000000000000000000000050
+      name: 'Interface status'
+      mappings:
+        - value: '1'
+          newvalue: up
+        - value: '2'
+          newvalue: down
+        - value: '3'
+          newvalue: testing
+        - value: '4'
+          newvalue: unknown
+        - value: '5'
+          newvalue: dormant
+        - value: '6'
+          newvalue: notPresent
+        - value: '7'
+          newvalue: lowerLayerDown

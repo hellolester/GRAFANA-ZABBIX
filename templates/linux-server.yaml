@@ -1,0 +1,127 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2e3fa8f6a2
+      name: 'Templates/Operating systems'
+  templates:
+    - uuid: 1a2b3c4d5e6f70819293a4b5c6d7e8f1
+      template: 'Linux Server by Zabbix Agent2'
+      name: 'Linux Server by Zabbix Agent2'
+      description: |
+        Agent-based monitoring template for Linux servers and virtual
+        machines, using Zabbix Agent 2 active checks. Vendor/distro neutral -
+        works on any modern Linux distribution.
+      groups:
+        - name: 'Templates/Operating systems'
+      items:
+        - uuid: 00000000000000000000000000000101
+          name: 'CPU utilization'
+          type: ZABBIX_ACTIVE
+          key: 'system.cpu.util'
+          delay: 1m
+          value_type: FLOAT
+          units: '%'
+
+        - uuid: 00000000000000000000000000000102
+          name: 'Memory utilization'
+          type: ZABBIX_ACTIVE
+          key: 'vm.memory.size[pavailable]'
+          delay: 1m
+          value_type: FLOAT
+          units: '%'
+
+        - uuid: 00000000000000000000000000000103
+          name: 'System uptime'
+          type: ZABBIX_ACTIVE
+          key: 'system.uptime'
+          delay: 3m
+          value_type: UNSIGNED
+          units: uptime
+
+        - uuid: 00000000000000000000000000000104
+          name: 'Number of running processes'
+          type: ZABBIX_ACTIVE
+          key: 'proc.num[]'
+          delay: 1m
+          value_type: UNSIGNED
+
+        - uuid: 00000000000000000000000000000105
+          name: 'System load average (1m)'
+          type: ZABBIX_ACTIVE
+          key: 'system.cpu.load[all,avg1]'
+          delay: 1m
+          value_type: FLOAT
+
+      discovery_rules:
+        - uuid: 00000000000000000000000000000110
+          name: 'Mounted filesystem discovery'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.discovery'
+          delay: 1h
+          item_prototypes:
+            - uuid: 00000000000000000000000000000120
+              name: 'Disk space used on {#FSNAME}'
+              type: ZABBIX_ACTIVE
+              key: 'vfs.fs.size[{#FSNAME},pused]'
+              delay: 5m
+              value_type: FLOAT
+              units: '%'
+          trigger_prototypes:
+            - uuid: 00000000000000000000000000000121
+              name: 'Disk space is critically low on {#FSNAME} at {HOST.NAME}'
+              expression: 'last(/Linux Server by Zabbix Agent2/vfs.fs.size[{#FSNAME},pused])>90'
+              priority: HIGH
+
+        - uuid: 00000000000000000000000000000130
+          name: 'Network interface discovery'
+          type: ZABBIX_ACTIVE
+          key: 'net.if.discovery'
+          delay: 1h
+          item_prototypes:
+            - uuid: 00000000000000000000000000000140
+              name: 'Interface {#IFNAME}: Bits received'
+              type: ZABBIX_ACTIVE
+              key: 'net.if.in[{#IFNAME}]'
+              delay: 1m
+              value_type: UNSIGNED
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters: []
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+            - uuid: 00000000000000000000000000000141
+              name: 'Interface {#IFNAME}: Bits sent'
+              type: ZABBIX_ACTIVE
+              key: 'net.if.out[{#IFNAME}]'
+              delay: 1m
+              value_type: UNSIGNED
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters: []
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+
+      triggers:
+        - uuid: 00000000000000000000000000000150
+          name: '{HOST.NAME}: High CPU utilization'
+          expression: 'min(/Linux Server by Zabbix Agent2/system.cpu.util,5m)>85'
+          priority: WARNING
+
+        - uuid: 00000000000000000000000000000151
+          name: '{HOST.NAME}: High memory usage (available memory below 10%)'
+          expression: 'max(/Linux Server by Zabbix Agent2/vm.memory.size[pavailable],5m)<10'
+          priority: HIGH
+
+        - uuid: 00000000000000000000000000000152
+          name: '{HOST.NAME}: Zabbix agent is not available'
+          expression: 'nodata(/Linux Server by Zabbix Agent2/system.uptime,10m)=1'
+          priority: HIGH
+
+        - uuid: 00000000000000000000000000000153
+          name: '{HOST.NAME}: Host was restarted'
+          expression: 'last(/Linux Server by Zabbix Agent2/system.uptime)<10m'
+          priority: INFO
