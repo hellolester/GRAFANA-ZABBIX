@@ -119,19 +119,12 @@ open-monitoring-stack-grafana-zabbix/
 ## Zabbix 7.0 Installation
 ```
 sudo -s
-
 apt update -y
-
 apt install -y wget gnupg mysql-server nginx php8.1-fpm
-
 wget https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.0+ubuntu22.04_all.deb
-
 dpkg -i zabbix-release_latest_7.0+ubuntu22.04_all.deb
-
 apt update -y
-
 apt install -y zabbix-server-mysql zabbix-frontend-php zabbix-nginx-conf zabbix-sql-scripts zabbix-agent
-
 mysql -uroot -p <<EOF
 CREATE DATABASE zabbix CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 CREATE USER 'zabbix'@'localhost' IDENTIFIED BY 'password';
@@ -148,15 +141,10 @@ QUIT;
 EOF
 
 sed -i 's/# DBPassword=/DBPassword=password/' /etc/zabbix/zabbix_server.conf
-
 sed -i 's/#[[:space:]]*listen[[:space:]]*8080;/listen 8080;/' /etc/zabbix/nginx.conf
-
 sed -i 's/#[[:space:]]*server_name[[:space:]].*/server_name localhost;/' /etc/zabbix/nginx.conf
-
 systemctl restart zabbix-server zabbix-agent nginx php8.1-fpm
-
 systemctl enable zabbix-server zabbix-agent nginx php8.1-fpm
-
 systemctl status zabbix-server --no-pager
 
 echo "======================================"
@@ -178,33 +166,19 @@ echo "======================================"
 ## Grafana 11.3.0 Installation
 ```
 sudo -s
-
 apt-get update -y
-
 apt-get install -y apt-transport-https wget gnupg
-
 mkdir -p /etc/apt/keyrings
-
 wget -O /etc/apt/keyrings/grafana.asc https://apt.grafana.com/gpg-full.key
-
 chmod 644 /etc/apt/keyrings/grafana.asc
-
 echo "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main" | tee /etc/apt/sources.list.d/grafana.list
-
 apt-get update -y
-
 apt-get install -y grafana
-
 systemctl enable grafana-server
-
 systemctl start grafana-server
-
 grafana-cli plugins install alexanderzobnin-zabbix-app
-
 systemctl restart grafana-server
-
 grafana-cli plugins ls
-
 systemctl status grafana-server --no-pager
 
 echo "======================================"
