@@ -117,7 +117,7 @@ open-monitoring-stack-grafana-zabbix/
     └── alert-example.md
 ```
 ## Zabbix 7.0 Installation
-
+```
 sudo -s
 
 apt update -y
@@ -173,9 +173,10 @@ echo "Default Zabbix Login:"
 echo "Username: Admin"
 echo "Password: zabbix"
 echo "======================================"
+```
 
 ## Grafana 11.3.0 Installation
-
+```
 sudo -s
 
 apt-get update -y
@@ -220,7 +221,7 @@ echo ""
 echo "Installed Plugin:"
 echo "alexanderzobnin-zabbix-app"
 echo "======================================"
-
+```
 
 ## Monitoring capabilities
 
