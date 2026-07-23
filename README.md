@@ -199,7 +199,6 @@ grafana-cli plugins install alexanderzobnin-zabbix-app
 systemctl restart grafana-server
 grafana-cli plugins ls
 systemctl status grafana-server --no-pager
-
 echo "======================================"
 echo "Grafana Installation Completed"
 echo "======================================"
@@ -213,6 +212,7 @@ echo "Password: admin"
 echo ""
 echo "Installed Plugin:"
 echo "alexanderzobnin-zabbix-app"
+http://localhost/api_jsonrpc.php
 echo "======================================"
 ```
 
