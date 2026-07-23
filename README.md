@@ -116,7 +116,7 @@ open-monitoring-stack-grafana-zabbix/
     ├── snmp-device-example.md
     └── alert-example.md
 ```
-## Zabbix 7.0 Installation
+## Zabbix
 ```
 sudo -s
 apt update -y
@@ -163,14 +163,27 @@ echo "Password: zabbix"
 echo "======================================"
 ```
 
-## Grafana 11.3.0 Installation
+## Grafana
 ```
-sudo -s
 apt-get update -y
 ************************************************************************
-sudo apt-get install -y adduser libfontconfig1 musl
+apt-get install -y adduser libfontconfig1 musl
 wget https://dl.grafana.com/oss/release/grafana_12.0.0_amd64.deb
+ls -lh grafana_12.0.0_amd64.deb
 sudo dpkg -i grafana_12.0.0_amd64.deb
+Note: If you see dependency errors, run this command to fix them: "sudo apt-get install -f"
+grafana --version
+systemctl daemon-reload
+systemctl enable grafana-server
+systemctl start grafana-server
+systemctl status grafana-server
+-- Configure Firewall (if enabled)
+-- For UFW:
+ufw allow 3000/tcp
+ufw reload
+-- For firewalld:
+firewall-cmd --add-port=3000/tcp --permanent
+firewall-cmd --reload
 ************************************************************************
 sudo apt-get install -y apt-transport-https wget gnupg
 mkdir -p /etc/apt/keyrings
