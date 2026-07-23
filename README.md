@@ -167,11 +167,17 @@ echo "======================================"
 ```
 sudo -s
 apt-get update -y
-apt-get install -y apt-transport-https wget gnupg
+************************************************************************
+sudo apt-get install -y adduser libfontconfig1 musl
+wget https://dl.grafana.com/oss/release/grafana_12.0.0_amd64.deb
+sudo dpkg -i grafana_12.0.0_amd64.deb
+************************************************************************
+sudo apt-get install -y apt-transport-https wget gnupg
 mkdir -p /etc/apt/keyrings
 wget -O /etc/apt/keyrings/grafana.asc https://apt.grafana.com/gpg-full.key
 chmod 644 /etc/apt/keyrings/grafana.asc
-echo "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main" | tee /etc/apt/sources.list.d/grafana.list
+echo "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+***********************************************************************
 apt-get update -y
 apt-get install -y grafana
 systemctl enable grafana-server
