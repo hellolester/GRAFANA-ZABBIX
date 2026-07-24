@@ -133,7 +133,7 @@ SET GLOBAL log_bin_trust_function_creators = 1;
 QUIT;
 EOF
 
-zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -ppassword zabbix
+zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p zabbix
 
 mysql -uroot -p <<EOF
 SET GLOBAL log_bin_trust_function_creators = 0;
